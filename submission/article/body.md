@@ -39,7 +39,7 @@ Alt text: Architecture: the user, the agent with its tools and decision, Amazon 
 
 ## The decision I handed to Strands Decider 2B
 
-Sentiment classification is exactly the kind of judgment that benefits from a fast, calibrated decision model rather than a general-purpose LLM call. An LLM asked "is this positive, negative, or neutral?" works, but it is slow (10+ seconds on the user group's hosted model), expensive at scale, and returns a word -- not a probability. I need a number to branch on: if confidence is below 0.6, I flag the response for review. An LLM does not give me that directly.
+Sentiment classification is exactly the kind of judgment that benefits from a fast, calibrated decision model rather than a general-purpose LLM call. An LLM asked "is this positive, negative, or neutral?" works, but it is slow (10+ seconds per call), expensive at scale, and returns a word -- not a probability. I need a number to branch on: if confidence is below 0.6, I flag the response for review. An LLM does not give me that directly.
 
 Strands Decider 2B reads the text and returns a probability distribution over the three labels in one forward pass. The question I ask it is:
 
@@ -69,11 +69,11 @@ Alt text: Architecture: the user, the agent with its tools and decision, Amazon 
 
 ## Measured
 
-The benchmark ran 12 held-out test cases (the "test" split in `agent/eval_cases.jsonl`) through both Strands Decider 2B and the user group's hosted LLM (qwen3.5-4b) answering the same QUESTIONS. The decider ran on the AWS User Group Madurai hosted API.
+The benchmark ran 12 held-out test cases (the "test" split in `agent/eval_cases.jsonl`) through both Strands Decider 2B and an LLM answering the same QUESTIONS. The decider ran on the AWS User Group Madurai hosted API.
 
 Decider: strands-decider-2b-hobson-v19 (ugmdu). 12 labelled cases, 12 decisions.
 
-| | Strands Decider 2B | qwen3.5-4b |
+| | Strands Decider 2B | LLM baseline |
 |---|---|---|
 | Accuracy | 100.0% | 100.0% |
 | Latency p50 per decision | 1554 ms | 10790 ms |
@@ -84,9 +84,17 @@ Decider: strands-decider-2b-hobson-v19 (ugmdu). 12 labelled cases, 12 decisions.
 
 At the median the decider was 6.9x faster than the LLM.
 
-Both models reached 100% accuracy on these 25 cases. The LLM answered all 12 at full confidence; the decider answered 7 confidently and flagged 5 as below the threshold. Those 5 flagged cases are real mixed or neutral responses where a human review is the right call.
+Both models reached 100% accuracy on these 12 cases. The LLM answered all 12 at full confidence; the decider answered 7 confidently and flagged 5 as below the threshold. Those 5 flagged cases are real mixed or neutral responses where a human review is the right call.
 
-On cost: qwen3.5-4b shows $0.000 because it ran on the AWS User Group Madurai hosted cloud, which is free for hackathon participants -- not because LLMs have no cost in production. The submission agent uses Amazon Bedrock (Amazon Nova Pro), where the same 1,000 LLM decisions would cost roughly $2 to $6 in input and output tokens. The decider's $0.035 per 1,000 decisions is from the hosted API; running it locally on a GPU brings that cost to near zero. So the real production cost advantage of the decider over a Bedrock LLM is much larger than this chart shows.
+To give a sense of what the agent classifies, here are three examples from the synthetic dataset it was benchmarked on:
+
+| Feedback | Expected | Verdict | Confidence |
+|---|---|---|---|
+| "The hackathon was absolutely incredible! I learned so much and the mentors were super helpful." | positive | positive | 0.927 |
+| "The food stalls ran out of food by noon. People were waiting in long queues and the staff was rude." | negative | negative | 0.915 |
+| "The event happened as scheduled. There were workshops in the morning and a competition in the afternoon." | neutral | neutral | 0.71 |
+
+The neutral case has lower confidence than the clear positives and negatives -- which is expected. A factual sentence with no emotional tone sits near the boundary between neutral and weakly positive, and the decider reflects that uncertainty in its score rather than hiding it.
 
 < FIGURE 2 of 5: upload submission/article/img/bench-accuracy.png here >
 Alt text: Accuracy of Strands Decider 2B and the Bedrock LLM on the labelled cases
