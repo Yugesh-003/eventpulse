@@ -1,0 +1,306 @@
+{
+ "decider_model": "strands-decider-2b-hobson-v19",
+ "rows": [
+  {
+   "i": 0,
+   "expected": {
+    "sentiment": "negative"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 0.9356
+    }
+   },
+   "decider_ms": 1570.6978999951389,
+   "decider_server_ms": 1001.2,
+   "llm": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 1.0
+    }
+   },
+   "llm_ms": 11381.628400005866,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 1,
+   "expected": {
+    "sentiment": "negative"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 0.9232
+    }
+   },
+   "decider_ms": 1473.5619999992196,
+   "decider_server_ms": 898.5,
+   "llm": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 1.0
+    }
+   },
+   "llm_ms": 10719.799999991665,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 2,
+   "expected": {
+    "sentiment": "negative"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 0.8688
+    }
+   },
+   "decider_ms": 1553.930499998387,
+   "decider_server_ms": 969.9,
+   "llm": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 0.95
+    }
+   },
+   "llm_ms": 10775.19640000537,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 3,
+   "expected": {
+    "sentiment": "negative"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 0.8761
+    }
+   },
+   "decider_ms": 1516.6705999872647,
+   "decider_server_ms": 884.2,
+   "llm": {
+    "sentiment": {
+     "label": "negative",
+     "confidence": 1.0
+    }
+   },
+   "llm_ms": 10702.01760000782,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 4,
+   "expected": {
+    "sentiment": "positive"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 0.9343
+    }
+   },
+   "decider_ms": 1558.0667000031099,
+   "decider_server_ms": 979.9,
+   "llm": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 1.0
+    }
+   },
+   "llm_ms": 10680.265300004976,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 5,
+   "expected": {
+    "sentiment": "positive"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 0.9245
+    }
+   },
+   "decider_ms": 1485.661100014113,
+   "decider_server_ms": 910.0,
+   "llm": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 1.0
+    }
+   },
+   "llm_ms": 10714.311899995664,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 6,
+   "expected": {
+    "sentiment": "positive"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 0.5912
+    }
+   },
+   "decider_ms": 1563.325499999337,
+   "decider_server_ms": 997.0,
+   "llm": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 0.9
+    }
+   },
+   "llm_ms": 10681.62340001436,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 7,
+   "expected": {
+    "sentiment": "neutral"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.513
+    }
+   },
+   "decider_ms": 1493.8549000071362,
+   "decider_server_ms": 910.2,
+   "llm": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.95
+    }
+   },
+   "llm_ms": 10900.965400011046,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 8,
+   "expected": {
+    "sentiment": "neutral"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.6167
+    }
+   },
+   "decider_ms": 1728.1904999981634,
+   "decider_server_ms": 974.5,
+   "llm": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.95
+    }
+   },
+   "llm_ms": 10796.35980000603,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 9,
+   "expected": {
+    "sentiment": "neutral"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.7862
+    }
+   },
+   "decider_ms": 1565.6736000091769,
+   "decider_server_ms": 979.5,
+   "llm": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.95
+    }
+   },
+   "llm_ms": 10805.741299991496,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 10,
+   "expected": {
+    "sentiment": "neutral"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.6278
+    }
+   },
+   "decider_ms": 1493.0830000084825,
+   "decider_server_ms": 884.6,
+   "llm": {
+    "sentiment": {
+     "label": "neutral",
+     "confidence": 0.95
+    }
+   },
+   "llm_ms": 10797.47469999711,
+   "llm_cost": 0.0
+  },
+  {
+   "i": 11,
+   "expected": {
+    "sentiment": "positive"
+   },
+   "decider": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 0.4797
+    }
+   },
+   "decider_ms": 1475.845400011167,
+   "decider_server_ms": 921.2,
+   "llm": {
+    "sentiment": {
+     "label": "positive",
+     "confidence": 0.9
+    }
+   },
+   "llm_ms": 10790.522499999497,
+   "llm_cost": 0.0
+  }
+ ],
+ "summary": {
+  "decider": {
+   "accuracy": 1.0,
+   "decisions": 12,
+   "per_question": {
+    "sentiment": 1.0
+   },
+   "latency_p50_ms": 1553.9,
+   "latency_p95_ms": 1570.7,
+   "usd_per_1k_decisions": 0.035,
+   "confident_share": 0.5833,
+   "accuracy_when_confident": 1.0,
+   "sent_to_human_at_threshold": 5
+  },
+  "llm": {
+   "accuracy": 1.0,
+   "decisions": 12,
+   "per_question": {
+    "sentiment": 1.0
+   },
+   "latency_p50_ms": 10790.5,
+   "latency_p95_ms": 10901.0,
+   "usd_per_1k_decisions": 0.0,
+   "confident_share": 1.0,
+   "accuracy_when_confident": 1.0,
+   "sent_to_human_at_threshold": 0
+  },
+  "speedup_p50": 6.94
+ },
+ "threshold": 0.7,
+ "llm_model": "qwen3.5-4b",
+ "llm_provider": "ugmdu",
+ "llm_where": "AWS User Group Madurai cloud (qwen3.5-4b)",
+ "decider_url": "https://da25tnxy06gjk.cloudfront.net",
+ "decider_mode": "ugmdu",
+ "ran_at": 1792307128.0070918,
+ "split": "test"
+}
