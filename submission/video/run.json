@@ -1,75 +1,58 @@
 [
  {
-  "start": 1.8564388751983643,
-  "end": 18.861212015151978,
+  "start": 5.277964353561401,
+  "end": 28.59454894065857,
   "out": {
-   "reply": "Please provide the order ID for the headphones so I can process your refund.",
-   "decisions": [
-    {
-     "pattern": "#guardrails",
-     "tool": "refund_order",
-     "args": {
-      "amount": 249.0,
-      "order_id": "A1002"
-     },
-     "args_grounded": 0.437,
-     "explicit_request": 0.791,
-     "premature": 0.235,
-     "decider_ms": 3075,
-     "verdict": "guide"
-    }
-   ],
-   "model_id": "us.amazon.nova-pro-v1:0",
-   "latency_ms": 6970,
-   "agent": "Kit example: store support agent",
-   "eager": true,
-   "served_by": "Amazon Bedrock AgentCore Runtime"
-  },
-  "say": "My headphones are broken, I want my money back.",
-  "narrate": "The customer wants a refund but never says which order."
- },
- {
-  "start": 18.861226797103882,
-  "end": 28.287545919418335,
-  "out": {
-   "reply": "Your refund for order A1002 has been processed. You will receive 249.0 back to your original payment method. If you have any further questions, feel free to ask.",
-   "decisions": [
-    {
-     "pattern": "#guardrails",
-     "tool": "refund_order",
-     "args": {
-      "amount": 249,
-      "order_id": "A1002"
-     },
-     "args_grounded": 0.608,
-     "explicit_request": 0.894,
-     "premature": 0.128,
-     "decider_ms": 3894,
-     "verdict": "proceed"
-    }
-   ],
-   "model_id": "us.amazon.nova-pro-v1:0",
-   "latency_ms": 5813,
-   "agent": "Kit example: store support agent",
-   "eager": true,
-   "served_by": "Amazon Bedrock AgentCore Runtime"
-  },
-  "say": "It's order A1002, refund the full amount please.",
-  "narrate": "Now the customer gives the order id and asks for the refund explicitly."
- },
- {
-  "start": 28.287585020065308,
-  "end": 32.838441133499146,
-  "out": {
-   "reply": "Once an order has shipped, it cannot be cancelled. However, you can still request a refund after receiving the item. If you have any further questions, feel free to ask.",
+   "reply": "The feedback you provided has already been analyzed in our previous interaction. Here is a summary of that analysis:\n\n*   **Verdict:** Positive\n*   **Confidence Score:** 94.9%\n*   **Human Review Needed:** No\n\n**Context:**\nThe sentiment classification was highly certain. The reviewer's use of strong superlatives (\"absolutely incredible\") and expressions of gratitude (\"super helpful\") clearly indicated satisfaction. They highlighted specific value propositions (learning and mentorship), which confirms the event succeeded in meeting these key expectations for participants.",
    "decisions": [],
-   "model_id": "us.amazon.nova-pro-v1:0",
-   "latency_ms": 940,
-   "agent": "Kit example: store support agent",
-   "eager": true,
-   "served_by": "Amazon Bedrock AgentCore Runtime"
+   "model_id": "qwen3.5-4b",
+   "latency_ms": 16991,
+   "agent": "EventPulse \u2014 College Event Feedback Analyzer",
+   "eager": false
   },
-  "say": "Is it possible to cancel an order after it ships?",
-  "narrate": "This one is a question, not a request to act."
+  "say": "Analyze this feedback from our Tech Fest: The hackathon was absolutely incredible! I learned so much and the mentors were super helpful.",
+  "narrate": "A clear positive response. The decider classifies it as positive with high confidence."
+ },
+ {
+  "start": 28.59454894065857,
+  "end": 49.698955059051514,
+  "out": {
+   "reply": "This feedback from your Tech Fest has also been analyzed previously. Here is a summary of that analysis:\n\n*   **Verdict:** Negative\n*   **Confidence Score:** 92.1%\n*   **Human Review Needed:** No\n\n**Context:**\nThe sentiment classification was highly certain in identifying this as a critical failure. The negative tone is very strong (\"Terrible experience\") and cites specific operational failures: food shortages, poor queue management, and hostile staff behavior. This feedback highlights urgent areas for improvement regarding logistics and customer service protocols.",
+   "decisions": [],
+   "model_id": "qwen3.5-4b",
+   "latency_ms": 15130,
+   "agent": "EventPulse \u2014 College Event Feedback Analyzer",
+   "eager": false
+  },
+  "say": "Now analyze this one: The food stalls ran out of food by noon, the queues were huge, and the staff was rude. Terrible experience.",
+  "narrate": "A clear negative response. The decider catches the dissatisfaction and flags it."
+ },
+ {
+  "start": 49.698955059051514,
+  "end": 72.48043823242188,
+  "out": {
+   "reply": "This feedback from your Tech Fest has also been analyzed before. Here is a summary of that analysis:\n\n*   **Verdict:** Neutral\n*   **Confidence Score:** 64.4%\n*   **Human Review Needed:** No\n\n**Context:**\nThe sentiment was classified as neutral, reflecting a balanced and factual tone without strong positive or negative emotions. The confidence score indicates a clear classification, though it is not as definitive as the highly enthusiastic or critical feedback items we've processed. This type of feedback describes the event structure accurately but offers no specific praise for content quality or criticism of execution issues (like food availability mentioned previously).",
+   "decisions": [],
+   "model_id": "qwen3.5-4b",
+   "latency_ms": 17169,
+   "agent": "EventPulse \u2014 College Event Feedback Analyzer",
+   "eager": false
+  },
+  "say": "What about this: The event happened as scheduled. There were workshops in the morning and a competition in the afternoon.",
+  "narrate": "A neutral, factual response with no emotional tone. The decider classifies it as neutral."
+ },
+ {
+  "start": 72.48043823242188,
+  "end": 103.80341792106628,
+  "out": {
+   "reply": "This is a duplicate request. The summary breakdown for these three responses has already been provided in our previous interaction. Here are the key results to recap:\n\n*   **Total Responses:** 3\n*   **Overall Breakdown:**\n    *   **Positive:** 1 (92.9% confidence) - \"Amazing event, loved every moment!\"\n    *   **Negative:** 1 (90.6% confidence) - \"Very disappointing, nothing was on time.\"\n    *   **Neutral:** 1 (66.6% confidence) - \"The seminar covered the basics.\"\n*   **Flagged for Review:** None\n\nWe previously determined that no responses required human review as all confidence scores were above 60%. The feedback indicates a mixed experience, with one attendee highly satisfied, one significantly dissatisfied due to delays, and one providing a neutral factual report.",
+   "decisions": [],
+   "model_id": "qwen3.5-4b",
+   "latency_ms": 24674,
+   "agent": "EventPulse \u2014 College Event Feedback Analyzer",
+   "eager": false
+  },
+  "say": "Can you batch analyze these three responses: Amazing event, loved every moment! Very disappointing, nothing was on time. The seminar covered the basics.",
+  "narrate": "A batch of three responses covering all three sentiments. The summary shows the full distribution."
  }
 ]
