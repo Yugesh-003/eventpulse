@@ -1,8 +1,8 @@
-# EventPulse: Classifying College Event Feedback with Strands Decider 2B at 6.9x the Speed of an LLM
+# Same Accuracy, Nearly 7x Faster Decisions: Building EventPulse with Strands Decider 2B
 
 By Yugesh
 
-After every college event -- tech fests, cultural nights, sports days, seminars -- organizers collect hundreds of feedback responses and then spend hours manually reading through them to understand what went well and what did not. EventPulse solves that. It is a conversational agent that classifies each feedback response as positive, negative, or neutral in a single forward pass using Strands Decider 2B, paired with Amazon Bedrock for the conversation layer. The headline result: 100% accuracy on held-out test cases, at 1,554 ms per classification -- 6.9 times faster than asking an LLM the same question.
+After every college event -- tech fests, cultural nights, sports days, seminars -- organizers collect hundreds of feedback responses and spend hours reading through them to understand what went well and what did not. EventPulse solves that. It is a conversational agent that classifies each feedback response as positive, negative, or neutral using Strands Decider 2B for the decision and Amazon Bedrock for the conversation. The headline result from a 12-case benchmark: both systems hit 100% accuracy, and the Decider did it at a median of 1,554 ms -- 6.9x faster than an LLM answering the same question.
 
 ## The project
 
@@ -10,21 +10,25 @@ EventPulse is for college event organizers and student union committees. They pa
 
 Features:
 - analyze a single feedback response and get a sentiment label (positive, negative, or neutral) with a confidence score from 0 to 1
-- batch-analyze a JSON list of responses and get a per-item breakdown plus an aggregate summary
+- batch-analyze a list of responses and get a per-item breakdown plus an aggregate summary
 - load sample feedback from 30 synthetic responses across five event types for quick demos
-- flag any response with confidence below 0.6 as "needs review" rather than guessing
+- route responses below the confidence threshold to human review instead of guessing
 
-Here is a short real exchange from a demo run:
+Here is a real exchange from a demo run:
 
 > **Organizer:** Analyze this feedback from our Tech Fest: "The hackathon was absolutely incredible! I learned so much and the mentors were super helpful."
 >
-> **EventPulse:** The feedback is **positive** with a confidence score of 0.927. With such high confidence, no human review is needed. This student had an excellent experience.
+> **EventPulse:** The feedback is **positive** with a confidence score of 0.949. No human review needed. This student had an excellent experience.
 
 > **Organizer:** Now analyze: "The food stalls ran out of food by noon, the queues were huge, and the staff was rude. Terrible experience."
 >
-> **EventPulse:** This feedback is **negative** with a confidence score of 0.915. These logistical issues are flagged for your team to address.
+> **EventPulse:** This feedback is **negative** with a confidence score of 0.921. These logistical issues are flagged for your team to address.
 
-Two classifications, two decisions, no LLM tokens spent on the classification itself.
+> **Organizer:** What about this: "The event happened as scheduled. There were workshops in the morning and a competition in the afternoon."
+>
+> **EventPulse:** This feedback is **neutral** with a confidence score of 0.644. This is near the review threshold -- worth a manual check before drawing conclusions.
+
+Three classifications, three decisions, structured verdicts the organizer can act on directly.
 
 ## How I built it
 
@@ -32,14 +36,14 @@ The architecture has three layers. Amazon Bedrock (Amazon Nova Pro) runs the con
 
 For the data layer, I generated 30 synthetic feedback responses across five college event types (Tech Fest, Cultural Night, Sports Day, Seminar on AI, general events) covering clear positives, clear negatives, factual neutrals, and near-misses like "the keynote was slow but the labs made up for it."
 
-I built the agent using the AWS User Group Madurai hackathon kit and Kiro, starting from a spec in `.kiro/specs/eventpulse/` (requirements, design, tasks) and then implementing the four files in `agent/`. The kit's `decider_kit/` library handled the Decider client, the bench runner, and the AgentCore deployment wiring. The agent is deployed on Amazon Bedrock AgentCore Runtime.
+I built the agent using the AWS User Group Madurai hackathon kit and Kiro, starting from a spec in `.kiro/specs/eventpulse/` (requirements, design, tasks) and implementing the four files in `agent/`. The kit's `decider_kit/` library handled the Decider client, the bench runner, and the AgentCore deployment wiring. The agent is deployed on Amazon Bedrock AgentCore Runtime.
 
 < FIGURE 1 of 5: upload submission/article/img/architecture.png here >
 Alt text: Architecture: the user, the agent with its tools and decision, Amazon Bedrock and Strands Decider 2B
 
 ## The decision I handed to Strands Decider 2B
 
-Sentiment classification is exactly the kind of judgment that benefits from a fast, calibrated decision model rather than a general-purpose LLM call. An LLM asked "is this positive, negative, or neutral?" works, but it is slow (10+ seconds per call), expensive at scale, and returns a word -- not a probability. I need a number to branch on: if confidence is below 0.6, I flag the response for review. An LLM does not give me that directly.
+Sentiment classification is a bounded judgment that benefits from a structured decision model rather than a general-purpose LLM call. An LLM asked "is this positive, negative, or neutral?" works, but it is slow (10+ seconds per call at scale), and returns a word -- not a probability. I need a number to branch on: if confidence is below the threshold, I route the response to human review. An LLM does not give me that directly.
 
 Strands Decider 2B reads the text and returns a probability distribution over the three labels in one forward pass. The question I ask it is:
 
@@ -59,44 +63,42 @@ QUESTIONS = {
 The option descriptions carry most of the signal. "Factual, indifferent, or mixed without a clear lean" is what separates neutral from a weak positive, and the decider reads that distinction from the descriptions, not from the label name alone.
 
 What the agent does with each answer:
-- confidence >= 0.6: return the label as the verdict
-- confidence < 0.6: return "needs_review" and tell the organizer to check it manually
+- confidence >= 0.7: return the label as the verdict and act on it
+- confidence < 0.7: return "needs_review" and tell the organizer to check it manually
 
-On the test split, 58% of cases were answered at confidence >= 0.7. The other 42% -- mostly neutral and mixed responses -- would reach the "needs review" path in production. That is honest: mixed feedback is genuinely hard to classify, and forcing a label on it would be worse than flagging it.
+On the test split, 7 of 12 cases were answered autonomously at confidence >= 0.7. The other 5 -- mostly neutral and mixed responses -- were flagged for review. That is expected: mixed feedback sits near the boundary between labels, and the decider reflects that uncertainty in its score rather than hiding it.
 
 < FIGURE 1 of 5: upload submission/article/img/architecture.png here >
 Alt text: Architecture: the user, the agent with its tools and decision, Amazon Bedrock and Strands Decider 2B
 
 ## Measured
 
-The benchmark ran 12 held-out test cases (the "test" split in `agent/eval_cases.jsonl`) through both Strands Decider 2B and an LLM answering the same QUESTIONS. The decider ran on the AWS User Group Madurai hosted API.
+The benchmark ran 12 held-out test cases (the "test" split in `agent/eval_cases.jsonl`) through both Strands Decider 2B and an LLM baseline answering the same QUESTIONS. The decider ran on the AWS User Group Madurai hosted API.
 
-Decider: strands-decider-2b-hobson-v19 (ugmdu). 12 labelled cases, 12 decisions.
+Decider: strands-decider-2b-hobson-v19. 12 labelled test cases.
 
-| | Strands Decider 2B | LLM baseline |
+| Metric | Strands Decider 2B | LLM baseline |
 |---|---|---|
 | Accuracy | 100.0% | 100.0% |
-| Latency p50 per decision | 1554 ms | 10790 ms |
-| Latency p95 | 1571 ms | 10901 ms |
-| Answered alone at confidence >= 0.7 | 58% | 100% |
-| Accuracy when confident | 100.0% | 100.0% |
+| Median latency | 1,554 ms | 10,791 ms |
+| 95th-percentile latency | 1,571 ms | 10,901 ms |
+| Autonomous coverage at threshold 0.7 | 58% | 100% |
+| Accuracy when answering autonomously | 100.0% | 100.0% |
 
-At the median the decider was 6.9x faster than the LLM.
+At the median, the Decider was 6.94x faster. Both systems achieved 100% accuracy on these 12 cases -- this is a small test set and does not establish a general accuracy advantage for either system. The Decider deferred 5 of 12 cases to human review; the LLM answered all 12 autonomously.
 
-Both models reached 100% accuracy on these 12 cases. The LLM answered all 12 at full confidence; the decider answered 7 confidently and flagged 5 as below the threshold. Those 5 flagged cases are real mixed or neutral responses where a human review is the right call.
-
-To give a sense of what the agent classifies, here are three examples from the synthetic dataset it was benchmarked on:
+Here are three examples from the synthetic dataset the benchmark ran on:
 
 | Feedback | Expected | Verdict | Confidence |
 |---|---|---|---|
-| "The hackathon was absolutely incredible! I learned so much and the mentors were super helpful." | positive | positive | 0.927 |
-| "The food stalls ran out of food by noon. People were waiting in long queues and the staff was rude." | negative | negative | 0.915 |
-| "The event happened as scheduled. There were workshops in the morning and a competition in the afternoon." | neutral | neutral | 0.71 |
+| "The hackathon was absolutely incredible! I learned so much and the mentors were super helpful." | positive | positive | 0.949 |
+| "The food stalls ran out of food by noon. People were waiting in long queues and the staff was rude." | negative | negative | 0.921 |
+| "The event happened as scheduled. There were workshops in the morning and a competition in the afternoon." | neutral | neutral | 0.644 |
 
-The neutral case has lower confidence than the clear positives and negatives -- which is expected. A factual sentence with no emotional tone sits near the boundary between neutral and weakly positive, and the decider reflects that uncertainty in its score rather than hiding it.
+The neutral case has lower confidence than the clear positives and negatives -- which is expected. A factual sentence with no emotional tone sits near the boundary, and the decider reports that honestly.
 
 < FIGURE 2 of 5: upload submission/article/img/bench-accuracy.png here >
-Alt text: Accuracy of Strands Decider 2B and the Bedrock LLM on the labelled cases
+Alt text: Accuracy of Strands Decider 2B and the LLM baseline on the labelled cases
 
 < FIGURE 3 of 5: upload submission/article/img/bench-latency.png here >
 Alt text: Median latency per decision for both
@@ -113,10 +115,10 @@ The pattern lives in [`agent/decision.py`](https://github.com/Yugesh-003/eventpu
 
 To drop it into your own agent:
 1. Copy `agent/decision.py` into your project.
-2. Change the three options in `QUESTIONS` to your own categories -- for example, "satisfied / unsatisfied / escalate" for a support agent, or "relevant / irrelevant / spam" for a content moderation agent.
+2. Change the three options in `QUESTIONS` to your own categories -- for example, "satisfied / unsatisfied / escalate" for a support agent, or "relevant / irrelevant / spam" for content moderation.
 3. Instantiate `FeedbackSentimentDecider(Decider())` in your tool and call `clf.classify(text)`.
 4. Branch on `result["verdict"]` and `result["confidence"]` in your code.
-5. Adjust `CONFIDENCE_THRESHOLD` (default 0.6) to match your tolerance for false positives versus flagged cases.
+5. Adjust `CONFIDENCE_THRESHOLD` to match your tolerance for false positives versus flagged cases.
 
 The wiring is a standalone helper, not an `InterventionHandler`, so it works in any tool or pre-agent step without requiring a Strands intervention seam.
 
@@ -124,7 +126,7 @@ The wiring is a standalone helper, not an `InterventionHandler`, so it works in 
 
 The biggest thing I learned is that the option descriptions matter more than the question text. My first version had terse descriptions like "positive response" and the decider struggled with mixed feedback. Adding "the student neither praises nor criticises clearly; the response is factual, indifferent, or mixed without a clear lean" to the neutral option fixed most of the ambiguous cases immediately.
 
-The 58% confident-share on the test split is lower than I would like for a production tool. Next steps would be to run the benchmark on a larger set of real feedback from actual college events, tune the confidence threshold per sentiment class (neutral likely needs a lower threshold than positive or negative), and add a second question asking which aspect of the event the feedback is about (venue, food, speaker, organization) to give organizers more actionable breakdowns.
+The 58% autonomous coverage on the test split is lower than I would want for a production tool. Next steps: run the benchmark on a larger set of real feedback from actual college events, tune the confidence threshold per sentiment class (neutral likely needs a lower threshold than positive or negative), and add a second question asking which aspect of the event the feedback covers (venue, food, speaker, organization) to give organizers more actionable breakdowns.
 
 ---
 

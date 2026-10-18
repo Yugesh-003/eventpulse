@@ -1,8 +1,8 @@
 Title (max 255 characters):
-EventPulse: Classifying College Event Feedback with Strands Decider 2B at 6.9x the Speed of an LLM
+Same Accuracy, Nearly 7x Faster Decisions: Building EventPulse with Strands Decider 2B
 
 Description (max 512 characters):
-EventPulse is a college event feedback analyzer that classifies student responses as positive, negative, or neutral using Strands Decider 2B for the sentiment decision and Amazon Bedrock for the conversation. The decider runs in one forward pass at 1,554 ms -- 6.9x faster than an LLM -- with 100% accuracy on held-out test cases and calibrated confidence scores that flag ambiguous responses for human review.
+EventPulse classifies college event feedback as positive, negative, or neutral using Strands Decider 2B for the sentiment decision and Amazon Bedrock for the conversation. On a 12-case benchmark both systems hit 100% accuracy; the Decider ran at 1,554 ms median -- 6.9x faster than an LLM. Responses below the confidence threshold are routed to human review instead of being forced into a label.
 
 Tags:
 strands-decider-2b, policy, amazon-bedrock, strands-agents, agentcore
